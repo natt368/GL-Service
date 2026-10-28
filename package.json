@@ -1,0 +1,9 @@
+{
+  "name": "gl-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Generate GrainLink installer work orders and supply lists for Trello from a customer's API key",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" }
+}

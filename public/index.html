@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GL Work Orders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="logo">🌾</span> GrainLink <span class="muted">Work Orders</span></div>
+  </header>
+
+  <main>
+    <section class="panel" id="keyPanel">
+      <h1>Build an installer work order</h1>
+      <p class="muted">Enter the customer's GrainLink API key. It's only sent to api.grainlink.com and is never saved.</p>
+      <form id="keyForm" class="key-row" autocomplete="off">
+        <div class="key-input">
+          <input id="apiKey" type="password" placeholder="Customer API key" spellcheck="false">
+          <button type="button" id="toggleKey" class="ghost small">Show</button>
+        </div>
+        <button id="loadBtn" type="submit" class="primary">Load customer</button>
+        <button id="demoBtn" type="button" class="ghost">Try demo data</button>
+      </form>
+      <pre id="loadError" class="error-box" hidden></pre>
+    </section>
+
+    <div class="grid">
+      <section class="panel" id="jobPanel" hidden>
+        <h2>Job details</h2>
+        <p id="customerSummary" class="summary"></p>
+
+        <label>Job type
+          <select id="jobType">
+            <option value="install">New install</option>
+            <option value="service">Service call</option>
+            <option value="inspection">Inspection</option>
+          </select>
+        </label>
+        <div class="row">
+          <label>Date <input type="date" id="jobDate"></label>
+          <label>Priority
+            <select id="priority">
+              <option value="normal">Normal</option>
+              <option value="high">High</option>
+              <option value="urgent">Urgent</option>
+            </select>
+          </label>
+        </div>
+        <label>Installer(s) <input id="installers" placeholder="e.g. Jake & Marcus"></label>
+
+        <fieldset>
+          <legend>Sites on this trip</legend>
+          <div id="siteList"></div>
+        </fieldset>
+
+        <label>Extra supplies <span class="muted">(one per line, e.g. "2 extension ladder")</span>
+          <textarea id="extraSupplies" rows="3"></textarea>
+        </label>
+        <label>Notes for the crew
+          <textarea id="notes" rows="4" placeholder="Gate code, where to park, dogs on site, customer wants a walkthrough…"></textarea>
+        </label>
+      </section>
+
+      <section class="panel" id="outputPanel" hidden>
+        <div class="out-head">
+          <h2>Work order</h2>
+          <div class="copy-bar">
+            <button id="copyTitle" class="ghost small">Copy title</button>
+            <button id="copyDesc" class="primary small">Copy card description</button>
+            <button id="copyTasks" class="ghost small">Copy task checklist</button>
+            <button id="copySupplies" class="ghost small">Copy supply checklist</button>
+            <button id="printBtn" class="ghost small">Print</button>
+          </div>
+        </div>
+        <p class="hint">In Trello: paste the <b>title</b> as a new card, the <b>description</b> into the card's description, and each <b>checklist</b> into a new checklist. Trello makes each line its own item.</p>
+        <article id="preview" class="wo"></article>
+        <details class="raw">
+          <summary>Trello markdown</summary>
+          <textarea id="markdownOut" rows="16" readonly></textarea>
+        </details>
+      </section>
+    </div>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="config.js"></script>
+  <script src="demo.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
