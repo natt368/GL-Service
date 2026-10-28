@@ -3,6 +3,14 @@
 // your installer kit. Nothing else in the app needs to change.
 // ─────────────────────────────────────────────────────────────────────────────
 window.GL_CONFIG = {
+  // Used when the page calls the API straight from the browser (e.g. on GitHub
+  // Pages). When running server.js, the server's env vars are used instead.
+  api: {
+    base: "https://api.grainlink.com",
+    authHeader: "Authorization",
+    authPrefix: "Bearer ",
+  },
+
   // Endpoints to load, relative to api.grainlink.com. For each resource the app
   // tries the paths in order and uses the first one that answers 200 OK.
   // A response may be a bare array or wrapped as {data|items|results|<name>: [...]}.

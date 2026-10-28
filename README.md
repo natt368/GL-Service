@@ -12,9 +12,15 @@ npm start
 
 Then open http://localhost:3000. Click **Try demo data** to see it without an API key.
 
+## Live site (GitHub Pages)
+
+https://natt368.github.io/GL-Service/
+
+`.github/workflows/pages.yml` publishes `public/` on every push. On Pages there is no server, so the page calls api.grainlink.com straight from the browser. That works only if the API allows cross-origin (CORS) requests from `natt368.github.io`. If it doesn't, use `npm start`, or paste the API's JSON into the **Or paste API data** box.
+
 ## How it works
 
-1. The browser sends the key to the local server (`server.js`). The server forwards it to `api.grainlink.com` (this avoids browser CORS errors). The key is never stored.
+1. With `npm start`, the browser sends the key to the local server (`server.js`), which forwards it to `api.grainlink.com` and so avoids CORS errors. On a static host, the page calls the API itself, using `api` in `public/config.js`. The key is never stored.
 2. The app loads the customer's account, sites, bins and devices, and works out:
    - **New install:** the bins with no transmitter, how many cables each one needs (by diameter), the cable lengths (eave height + roof rise + slack), and whether the site needs a hub.
    - **Service call:** offline devices and low batteries, with swap units and battery packs added to the supply list.

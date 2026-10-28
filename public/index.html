@@ -26,6 +26,12 @@
         <button id="demoBtn" type="button" class="ghost">Try demo data</button>
       </form>
       <pre id="loadError" class="error-box" hidden></pre>
+      <details class="raw paste">
+        <summary>Or paste API data (JSON)</summary>
+        <p class="muted">Paste an object shaped like <code>{"account": {...}, "sites": [...], "bins": [...], "devices": [...]}</code>, or just one of those responses.</p>
+        <textarea id="pasteJson" rows="8" spellcheck="false"></textarea>
+        <button id="pasteBtn" type="button" class="primary small">Build from pasted data</button>
+      </details>
     </section>
 
     <div class="grid">

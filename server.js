@@ -30,7 +30,8 @@ const MIME = {
 };
 
 function send(res, status, body, type = "application/json; charset=utf-8") {
-  res.writeHead(status, { "Content-Type": type, "Cache-Control": "no-store" });
+  // X-GL-Proxy tells the page it is talking to this server, not a static host.
+  res.writeHead(status, { "Content-Type": type, "Cache-Control": "no-store", "X-GL-Proxy": "1" });
   res.end(typeof body === "string" || Buffer.isBuffer(body) ? body : JSON.stringify(body));
 }
 

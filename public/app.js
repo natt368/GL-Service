@@ -39,8 +39,25 @@
   }
 
   // ── API ────────────────────────────────────────────────────────────────────
+  // Uses the local proxy (server.js) when it's there. On a static host such as
+  // GitHub Pages there is no proxy, so call the API from the browser instead;
+  // that only works if api.grainlink.com allows cross-origin requests.
+  let useProxy = location.protocol !== "file:";
   async function apiGet(path, key) {
-    const res = await fetch("/api/proxy?path=" + encodeURIComponent(path), { headers: { "X-GL-Key": key } });
+    let res;
+    if (useProxy) {
+      res = await fetch("/api/proxy?path=" + encodeURIComponent(path), { headers: { "X-GL-Key": key } });
+      if (!res.headers.get("X-GL-Proxy")) useProxy = false;
+    }
+    if (!useProxy) {
+      try {
+        res = await fetch(C.api.base.replace(/\/+$/, "") + path, {
+          headers: { [C.api.authHeader]: C.api.authPrefix + key, Accept: "application/json" },
+        });
+      } catch {
+        throw new Error("The browser couldn't reach " + C.api.base + ". The API may not allow requests from this site (CORS). Run the app with npm start, or paste the API's JSON below.");
+      }
+    }
     const text = await res.text();
     let json;
     try { json = JSON.parse(text); } catch { json = text; }
@@ -327,10 +344,10 @@
             ${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">Map ↗</a>` : ""}
           </div>
           ${sj.site.address ? `<p class="muted">${esc(sj.site.address)}</p>` : ""}
-          ${bins.length ? `<table class="wo-bins"><thead><tr><th>Bin</th><th>Size</th>${job.jobType === "install" ? "<th>Cables</th>" : "<th>Devices</th>"}</tr></thead><tbody>
+          ${bins.length ? `<div class="wo-bins-wrap"><table class="wo-bins"><thead><tr><th>Bin</th><th>Size</th>${job.jobType === "install" ? "<th>Cables</th>" : "<th>Devices</th>"}</tr></thead><tbody>
             ${bins.map((b) => `<tr><td><strong>${esc(b.name)}</strong></td><td>${esc(binDims(b) || "—")}</td>
               <td>${job.jobType === "install" ? `${cablesFor(b)} × ${cableLengthFt(b)} ft` : b.devices.length ? b.devices.map((d) => `<span class="dot ${d.online ? (d.lowBattery ? "amber" : "green") : "red"}"></span>${esc(d.serial)}`).join(" ") : "—"}</td></tr>`).join("")}
-          </tbody></table>` : `<p class="muted">${job.jobType === "install" ? "All bins already have transmitters." : "No bins on file."}</p>`}
+          </tbody></table></div>` : `<p class="muted">${job.jobType === "install" ? "All bins already have transmitters." : "No bins on file."}</p>`}
           ${issues.length ? `<h4>Device issues</h4><ul class="wo-issues">${issues.join("")}</ul>` : ""}
           <h4>Tasks</h4>
           <ul class="wo-checks">${tasksFor(job, sj).map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
@@ -440,4 +457,12 @@
   $("#copyTasks").addEventListener("click", () => copy(toTaskChecklist(state.job), "Task checklist"));
   $("#copySupplies").addEventListener("click", () => copy(toSupplyChecklist(state.job), "Supply checklist"));
   $("#printBtn").addEventListener("click", () => window.print());
+  $("#pasteBtn").addEventListener("click", () => {
+    let json;
+    try { json = JSON.parse($("#pasteJson").value); } catch { return toast("That isn't valid JSON. Copy the whole API response and try again.", true); }
+    const raw = Array.isArray(json) ? { bins: json, devices: json }
+      : json.account || json.sites || json.bins || json.devices ? json
+      : { account: json, sites: json, bins: json, devices: json };
+    showData(normalise(raw));
+  });
 })();
