@@ -18,10 +18,10 @@
   <main>
     <section class="panel" id="keyPanel">
       <h1>Build an installer work order</h1>
-      <p class="muted">Enter the customer's GrainLink API key. It's only sent to api.grainlink.com and is never saved.</p>
+      <p class="muted">Paste the customer's JWT token from <b>API Access</b> in the GrainLink dashboard. It's only sent to api.grainlink.com and is never saved. Tokens expire after 2 hours.</p>
       <form id="keyForm" class="key-row" autocomplete="off">
         <div class="key-input">
-          <input id="apiKey" type="password" placeholder="Customer API key" spellcheck="false">
+          <input id="apiKey" type="password" placeholder="eyJhbGciOi… (JWT token)" spellcheck="false">
           <button type="button" id="toggleKey" class="ghost small">Show</button>
         </div>
         <button id="loadBtn" type="submit" class="primary">Load customer</button>
@@ -30,7 +30,7 @@
       <pre id="loadError" class="error-box" hidden></pre>
       <details class="raw paste">
         <summary>Or paste API data (JSON)</summary>
-        <p class="muted">Paste an object shaped like <code>{"account": {...}, "sites": [...], "bins": [...], "devices": [...]}</code>, or just one of those responses.</p>
+        <p class="muted">Paste an object shaped like <code>{"user": {...}, "accounts": [...], "locations": [...], "silos": [...], "cables": [...], "chesters": [...], "sensors": [...], "alarms": [...]}</code>, where each list is the <code>results</code> from that GrainLink endpoint.</p>
         <textarea id="pasteJson" rows="8" spellcheck="false"></textarea>
         <button id="pasteBtn" type="button" class="primary small">Build from pasted data</button>
       </details>
@@ -40,6 +40,9 @@
       <section class="panel" id="jobPanel" hidden>
         <h2>Job details</h2>
         <p id="customerSummary" class="summary"></p>
+        <label id="accountRow" hidden>Customer account
+          <select id="accountSel"></select>
+        </label>
 
         <label>Job type
           <select id="jobType">

@@ -122,11 +122,16 @@ button:disabled { opacity: .6; cursor: wait; }
 .wo-issues { padding-left: 0; list-style: none; margin: 0; }
 .wo-issues li { padding: 4px 0; font-size: 14px; }
 .notes { white-space: pre-wrap; }
+.small { font-size: 12px; }
+.wo-bins .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.wo-bins td.warn { color: var(--red); font-weight: 700; }
+.wo-stats .hot b { color: var(--red); }
 .pill { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; padding: 2px 8px; border-radius: 999px; margin-right: 8px; color: #fff; }
 .pill.red { background: var(--red); }
 .pill.amber { background: var(--amber); }
 .pill.grey { background: rgba(255,255,255,.18); }
 .pill.gold { background: var(--brand); color: var(--brand-ink); }
+.pill.grey-dark { background: var(--muted); }
 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin: 0 4px 0 6px; }
 .dot.green { background: var(--green); } .dot.amber { background: var(--amber); } .dot.red { background: var(--red); }
 

@@ -20,12 +20,26 @@ https://natt368.github.io/GL-Service/
 
 ## How it works
 
-1. With `npm start`, the browser sends the key to the local server (`server.js`), which forwards it to `api.grainlink.com` and so avoids CORS errors. On a static host, the page calls the API itself, using `api` in `public/config.js`. The key is never stored.
-2. The app loads the customer's account, sites, bins and devices, and works out:
-   - **New install:** the bins with no transmitter, how many cables each one needs (by diameter), the cable lengths (eave height + roof rise + slack), and whether the site needs a hub.
-   - **Service call:** offline devices and low batteries, with swap units and battery packs added to the supply list.
-   - **Inspection:** a task to check each bin.
-3. Copy buttons give you:
+1. In the GrainLink dashboard, open **API Access** and copy the customer's **JWT token**. Tokens expire after 2 hours.
+2. Paste it into the app and click **Load customer**. The token is sent as `Authorization: Bearer <token>` and is never stored. With `npm start` the request goes through the local proxy (`server.js`). On GitHub Pages the browser calls api.grainlink.com directly.
+3. The app loads these endpoints from the GrainLink API (following pagination):
+
+   | Endpoint | Used for |
+   |---|---|
+   | `/api/users/current/` | Customer contact name, phone, email |
+   | `/api/accounts/` | Account name (and an account picker if the token sees several) |
+   | `/api/locations/` | Sites, addresses, map links |
+   | `/api/silos/` and `/api/silos/{uuid}/` | Bins, grain, sensor counts, diameter, eave and peak height |
+   | `/api/cables/` | Sensor cables in each bin |
+   | `/api/sensors/` | Sensor `status` (offline, fault, stale, unseen, unstable) |
+   | `/api/chesters/` | Gateways: online state, last seen, backup voltage |
+   | `/api/alarms/` | Active alarms and their severity |
+
+4. It picks the job type from what it finds:
+   - **Service call** (if anything is wrong): offline Chester gateways, cables with sensors that aren't reporting, unstable sensors and active alarms. Sensors behind an offline gateway are folded into that gateway's task.
+   - **New install** (if bins have no sensors): cable count from the bin's diameter, cable length from its peak height, and a Chester for sites that don't have one.
+   - **Inspection**: a check task for every gateway and monitored bin.
+5. Copy buttons give you:
    - **Title:** paste it as a new Trello card.
    - **Card description:** Trello markdown for the card's description.
    - **Task checklist / Supply checklist:** paste each into a Trello checklist. Trello makes each line its own item.
@@ -34,10 +48,12 @@ https://natt368.github.io/GL-Service/
 
 | Setting | What it controls |
 |---|---|
-| `endpoints` | The API paths to try for account, sites, bins and devices |
-| `fields` | Field-name aliases, so the app can read whatever names the API uses |
-| `cableRules`, `roofPitchDeg`, `cableSlackFt` | How many cables each bin needs and how long they are |
-| `supplies` | The kit list: each item's quantity per job, site, bin, cable or device issue |
+| `endpoints`, `pageSize`, `loadBinDetails` | Which GrainLink endpoints are loaded |
+| `sensorFixStatuses`, `sensorCheckStatuses` | Which sensor statuses count as broken or worth a look |
+| `closedAlarmState` | Which alarm states are left off the work order |
+| `lowBackupVoltage` | Flag Chester backup batteries at or below this voltage (off by default) |
+| `units`, `cableRules`, `cableSlackFt` | Bin units, cables per bin diameter, and cable length |
+| `supplies` | The kit list: each item's quantity per job, gateway, bin, cable, offline gateway or faulty cable |
 
 These environment variables set how the server calls the API:
 
